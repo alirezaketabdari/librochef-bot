@@ -31,6 +31,24 @@ async def welcome_message(update: Update, context: CallbackContext):
     # Send the welcome message with the button
     await update.message.reply_text(intro_text, parse_mode="Markdown", reply_markup=reply_markup)
 
+# Command to display menu
+async def display_menu_of_week(update: Update, context: CallbackContext):
+    # Correct usage of menu_of_week, ensuring it's a list of dishes
+    menu_of_week = [
+        {"name": "Spaghetti Bolognese", "image": "https://example.com/spaghetti.jpg", "ingredients": "Pasta, Beef, Tomatoes, Garlic, Onion", "price": 12, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Classic Italian pasta with rich Bolognese sauce."},
+        {"name": "Margherita Pizza", "image": "https://example.com/pizza.jpg", "ingredients": "Tomato, Mozzarella, Basil, Olive Oil", "price": 10, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Traditional pizza with mozzarella and fresh basil."},
+    ]
+
+    keyboard = [
+        [InlineKeyboardButton(dish['name'], callback_data=dish['name']) for dish in menu_of_week]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # Send the menu to the user
+    await update.callback_query.message.reply_text("Please select a dish from the menu of the week:", reply_markup=reply_markup)
+
+    # Answer the callback query (to remove the "loading" state)
+    await update.callback_query.answer()
 
 # Callback function to show details of the selected dish
 async def show_dish_details(update: Update, context: CallbackContext):
@@ -65,25 +83,6 @@ async def show_dish_details(update: Update, context: CallbackContext):
         await query.message.reply_text("Would you like to add this dish to your basket?", reply_markup=reply_markup)
     else:
         await query.answer("Dish not found.")
-
-# Command to display menu
-async def display_menu_of_week(update: Update, context: CallbackContext):
-    # Correct usage of menu_of_week, ensuring it's a list of dishes
-    menu_of_week = [
-        {"name": "Spaghetti Bolognese", "image": "https://example.com/spaghetti.jpg", "ingredients": "Pasta, Beef, Tomatoes, Garlic, Onion", "price": 12, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Classic Italian pasta with rich Bolognese sauce."},
-        {"name": "Margherita Pizza", "image": "https://example.com/pizza.jpg", "ingredients": "Tomato, Mozzarella, Basil, Olive Oil", "price": 10, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Traditional pizza with mozzarella and fresh basil."},
-    ]
-
-    keyboard = [
-        [InlineKeyboardButton(dish['name'], callback_data=dish['name']) for dish in menu_of_week]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    # Send the menu to the user
-    await update.callback_query.message.reply_text("Please select a dish from the menu of the week:", reply_markup=reply_markup)
-
-    # Answer the callback query (to remove the "loading" state)
-    await update.callback_query.answer()
 
 # To track the basket (user orders)
 user_baskets = {}
