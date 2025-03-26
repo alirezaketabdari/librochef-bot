@@ -4,10 +4,6 @@ from telegram.ext import Application, CommandHandler, CallbackQueryHandler, Mess
 # Replace this with your bot token from BotFather 
 TOKEN = "7803608326:AAGGVhBNpqFS9-ZPkOW35mh8nRFhJaYwnDY"
 
-menu_of_week = [
-    {"name": "Spaghetti Bolognese", "image": "https://example.com/spaghetti.jpg", "ingredients": "Pasta, Beef, Tomatoes, Garlic, Onion", "price": 12, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Classic Italian pasta with rich Bolognese sauce."},
-    {"name": "Margherita Pizza", "image": "https://example.com/pizza.jpg", "ingredients": "Tomato, Mozzarella, Basil, Olive Oil", "price": 10, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Traditional pizza with mozzarella and fresh basil."},
-]
 
 # Send automatic introduction when the user first interacts with the bot
 async def welcome_message(update: Update, context: CallbackContext):
@@ -19,56 +15,72 @@ async def welcome_message(update: Update, context: CallbackContext):
         "We explore everything from *traditional local dishes* to *modern gastronomy*, pushing our limits in "
         "*large-scale catering, advanced cooking techniques, and recipe development.*\n\n"
         "This bot is here for one essential task: *managing deliveries and registering your name* for our exclusive culinary experiences. 🍕📦\n\n"
-        "Let’s get started! 🚀"
+        "Let’s get started! 🚀\n\n"
+        "I'm here to help you with our weekly menu.\n"
     )
-    await update.message.reply_text(intro_text, parse_mode="Markdown")
+
+    # Create a button that triggers the /menuOfWeek command
+    keyboard = [
+        [InlineKeyboardButton("Show Menu of the Week", callback_data='menu_of_week')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # Send the welcome message with the button
+    await update.message.reply_text(intro_text, parse_mode="Markdown", reply_markup=reply_markup)
+
 
 # Callback function to show details of the selected dish
 async def show_dish_details(update: Update, context: CallbackContext):
     query = update.callback_query
-    dish_name = query.data
+    dish_name = query.data  # Get the selected dish name
 
-    # Find the dish in the menu
+    menu_of_week = [
+        {"name": "Spaghetti Bolognese", "ingredients": "Pasta, Beef, Tomatoes, Garlic, Onion", "price": 12, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Classic Italian pasta with rich Bolognese sauce."},
+        {"name": "Margherita Pizza", "ingredients": "Tomato, Mozzarella, Basil, Olive Oil", "price": 10, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Traditional pizza with mozzarella and fresh basil."},
+    ]
+
+    # Find the selected dish in the menu
     dish = next((d for d in menu_of_week if d['name'] == dish_name), None)
 
     if dish:
-        details_text = f"*{dish['name']}*\n\n"
-        details_text += f"*Ingredients:* {dish['ingredients']}\n"
-        details_text += f"*Approximate Amount:* €{dish['price']}\n"
-        details_text += f"*Delivery Time:* {dish['time_of_delivery']}\n"
-        details_text += f"*Location:* {dish['location']}\n\n"
-        details_text += f"{dish['description']}\n\n"
-        
-        # Send dish image and details
-        await query.answer()
-        await query.message.reply_photo(dish['image'], caption=details_text)
+        details_text = (
+            f"🍽 *{dish['name']}*\n\n"
+            f"📌 *Ingredients:* {dish['ingredients']}\n"
+            f"💰 *Price:* €{dish['price']}\n"
+            f"⏰ *Delivery Time:* {dish['time_of_delivery']}\n"
+            f"📍 *Location:* {dish['location']}\n\n"
+            f"{dish['description']}\n"
+        )
 
-        # Add to basket button
-        keyboard = [
-            [InlineKeyboardButton("Add to Basket", callback_data=f"add_{dish['name']}")]
-        ]
+        await query.answer()
+        await query.message.reply_text(details_text, parse_mode="Markdown")
+
+        # "Add to Basket" button
+        keyboard = [[InlineKeyboardButton("🛒 Add to Basket", callback_data=f"add_{dish_name}")]]
         reply_markup = InlineKeyboardMarkup(keyboard)
+
         await query.message.reply_text("Would you like to add this dish to your basket?", reply_markup=reply_markup)
     else:
         await query.answer("Dish not found.")
 
-# async def handle_message(update: Update, context: CallbackContext):
-#     text = update.message.text
-#     await update.message.reply_text(f"You said: {text}")
-
 # Command to display menu
 async def display_menu_of_week(update: Update, context: CallbackContext):
-    # Print debug message
-    print("Here I am")
-
     # Correct usage of menu_of_week, ensuring it's a list of dishes
+    menu_of_week = [
+        {"name": "Spaghetti Bolognese", "image": "https://example.com/spaghetti.jpg", "ingredients": "Pasta, Beef, Tomatoes, Garlic, Onion", "price": 12, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Classic Italian pasta with rich Bolognese sauce."},
+        {"name": "Margherita Pizza", "image": "https://example.com/pizza.jpg", "ingredients": "Tomato, Mozzarella, Basil, Olive Oil", "price": 10, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Traditional pizza with mozzarella and fresh basil."},
+    ]
+
     keyboard = [
         [InlineKeyboardButton(dish['name'], callback_data=dish['name']) for dish in menu_of_week]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    
+
     # Send the menu to the user
-    await update.message.reply_text("Please select a dish from the menu of the week:", reply_markup=reply_markup)
+    await update.callback_query.message.reply_text("Please select a dish from the menu of the week:", reply_markup=reply_markup)
+
+    # Answer the callback query (to remove the "loading" state)
+    await update.callback_query.answer()
 
 # To track the basket (user orders)
 user_baskets = {}
@@ -131,6 +143,7 @@ async def remove_user_from_list(update: Update, context: CallbackContext):
     else:
         await update.message.reply_text("User not found in the list.")
 
+
 def main():
     app = Application.builder().token(TOKEN).build()
 
@@ -138,10 +151,9 @@ def main():
     app.add_handler(CommandHandler("start", welcome_message))
     app.add_handler(CommandHandler("help", lambda u, c: u.message.reply_text("Available commands: /start /help")))
 
-    # Add command handlers
-    app.add_handler(CommandHandler("menuOfWeek", display_menu_of_week))
-    app.add_handler(CallbackQueryHandler(show_dish_details))
-    app.add_handler(CallbackQueryHandler(add_to_basket, pattern="^add_.*$"))
+    # Callback handlers
+    app.add_handler(CallbackQueryHandler(display_menu_of_week, pattern='^menu_of_week$'))  # Handle the callback data
+    app.add_handler(CallbackQueryHandler(show_dish_details))  # Catch all dish selections
 
     print("Bot is running...")
     app.run_polling()
