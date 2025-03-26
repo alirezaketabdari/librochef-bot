@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 
-# Replace this with your bot token from BotFather
+# Replace this with your bot token from BotFather gggggggggggggggg
 TOKEN = "7803608326:AAGGVhBNpqFS9-ZPkOW35mh8nRFhJaYwnDY"
 
 # Command Handlers
