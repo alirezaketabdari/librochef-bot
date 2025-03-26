@@ -8,15 +8,17 @@ TOKEN = "7803608326:AAGGVhBNpqFS9-ZPkOW35mh8nRFhJaYwnDY"
 # Send automatic introduction when the user first interacts with the bot
 async def welcome_message(update: Update, context: CallbackContext):
     intro_text = (
-        "🍽️ *Welcome to the LibroChef Bot!* 🍽️\n\n"
-        "Hello, my friend! 👋\n\n"
-        "I am *LibroChef Bot*, your gateway to a world of flavors and culinary mastery! 🍲🔥\n"
-        "*LibroChef* is a culinary studio dedicated to *learning, teaching, and refining* the art of cooking. "
-        "We explore everything from *traditional local dishes* to *modern gastronomy*, pushing our limits in "
-        "*large-scale catering, advanced cooking techniques, and recipe development.*\n\n"
-        "This bot is here for one essential task: *managing deliveries and registering your name* for our exclusive culinary experiences. 🍕📦\n\n"
-        "Let’s get started! 🚀\n\n"
-        "I'm here to help you with our weekly menu.\n"
+        "🍽️ *Welcome to LibroChef Bot!* 🍽️\n\n"
+        "Hey there! 👋 I'm *LibroChef Bot*, your foodie companion, here to make your culinary experience smooth and delicious. 🍲🔥\n\n"
+        
+        "🌟 *What is LibroChef?* 🌟\n"
+        "LibroChef is a *culinary studio* where we cook, learn, and experiment—from *classic dishes* to *modern gastronomy*. "
+        "We love pushing boundaries with *new techniques, large-scale catering, and creative recipes*.\n\n"
+
+        "🤖 *How Can I Help?* 🤖\n"
+        "I handle *deliveries* and sign you up for *exclusive culinary events*. Need our *weekly menu*? I've got you covered! 🍕📦\n\n"
+        
+        "🚀 Let’s get started!"
     )
 
     # Create a button that triggers the /menuOfWeek command
