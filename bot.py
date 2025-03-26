@@ -9,7 +9,8 @@ TOKEN = "7803608326:AAGGVhBNpqFS9-ZPkOW35mh8nRFhJaYwnDY"
 async def welcome_message(update: Update, context: CallbackContext):
     intro_text = (
         "🍽️ *Welcome to LibroChef Bot!* 🍽️\n\n"
-        "Hey there! 👋 I'm *LibroChef Bot*, your foodie companion, here to make your culinary experience smooth and delicious. 🍲🔥\n\n"
+        "Hey there! 👋 \n" 
+        "I'm *LibroChef Bot*, your foodie companion, here to make your culinary experience smooth and delicious. 🍲🔥\n\n"
         
         "🌟 *What is LibroChef?* 🌟\n"
         "LibroChef is a *culinary studio* where we cook, learn, and experiment—from *classic dishes* to *modern gastronomy*. "
