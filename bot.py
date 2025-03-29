@@ -19,7 +19,7 @@ async def welcome_message(update: Update, context: CallbackContext):
         "🤖 *How Can I Help?* 🤖\n"
         "I handle *deliveries* and sign you up for *exclusive culinary events*. Need our *weekly menu*? I've got you covered! 🍕📦\n\n"
         
-        "🚀 Let’s get started!"
+        "🚀 Let’s get started!!"
     )
 
     # Create a button that triggers the /menuOfWeek command
