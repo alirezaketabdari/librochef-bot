@@ -1,6 +1,6 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, CallbackContext
-
+from urllib.parse import quote, unquote
 # Replace this with your bot token from BotFather 
 TOKEN = "7803608326:AAGGVhBNpqFS9-ZPkOW35mh8nRFhJaYwnDY"
 
@@ -54,7 +54,7 @@ async def display_menu_of_week(update: Update, context: CallbackContext):
 async def show_dish_details(update: Update, context: CallbackContext):
     query = update.callback_query
     dish_name = query.data  # Get the selected dish name
-
+    
     menu_of_week = [
         {"name": "Spaghetti Bolognese", "ingredients": "Pasta, Beef, Tomatoes, Garlic, Onion", "price": 12, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Classic Italian pasta with rich Bolognese sauce."},
         {"name": "Margherita Pizza", "ingredients": "Tomato, Mozzarella, Basil, Olive Oil", "price": 10, "location": "Milan", "time_of_delivery": "12:00-14:00", "description": "Traditional pizza with mozzarella and fresh basil."},
@@ -62,7 +62,7 @@ async def show_dish_details(update: Update, context: CallbackContext):
 
     # Find the selected dish in the menu
     dish = next((d for d in menu_of_week if d['name'] == dish_name), None)
-
+    print(dish)
     if dish:
         details_text = (
             f"🍽 *{dish['name']}*\n\n"
@@ -77,7 +77,9 @@ async def show_dish_details(update: Update, context: CallbackContext):
         await query.message.reply_text(details_text, parse_mode="Markdown")
 
         # "Add to Basket" button
-        keyboard = [[InlineKeyboardButton("🛒 Add to Basket", callback_data=f"add_{dish_name}")]]
+        callback_data = f"add_{quote(dish_name)}"
+        print(callback_data)
+        keyboard = [[InlineKeyboardButton("🛒 Add to Basket", callback_data=callback_data)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
 
         await query.message.reply_text("Would you like to add this dish to your basket?", reply_markup=reply_markup)
@@ -94,14 +96,51 @@ async def add_to_basket(update: Update, context: CallbackContext):
 
     # Ask the user for the number of portions
     await query.answer()
-    await query.message.reply_text(f"How many portions of *{dish_name}* would you like to order?", parse_mode="Markdown")
+    await query.message.reply_text(
+        f"How many portions of *{dish_name}* would you like to order?\n\n"
+        "🔢 *Enter a number (1-4).*\n"
+        "⚠️ If you need more than 4 portions, please contact the admin: [Contact Admin](https://t.me/mrlibro)",
+        parse_mode="Markdown",
+        disable_web_page_preview=True
+    )
+    # Save dish name in context
+    context.user_data["pending_order"] = {"dish": dish_name}
 
-    # Store in the context for further processing
-    user_baskets[query.from_user.id] = {
-        "dish": dish_name,
-        "portions": 0,
-        "delivery_time": None
-    }
+    # Set up a message handler to capture user input
+    context.user_data["awaiting_quantity"] = True
+
+async def receive_quantity(update: Update, context: CallbackContext):
+    if "awaiting_quantity" not in context.user_data:
+        return  # Ignore messages if not expecting input
+
+    user_input = update.message.text.strip()
+
+    if not user_input.isdigit():
+        await update.message.reply_text("❌ Please enter a valid *number* (1-4). Try again:")
+        return
+
+    quantity = int(user_input)
+
+    if quantity > 4:
+        await update.message.reply_text(
+            "⚠️ Orders of more than 4 portions require admin approval.\n"
+            "Please contact the admin: [Contact Admin](https://t.me/mrlibro)",
+            parse_mode="Markdown",
+            disable_web_page_preview=True
+        )
+        return
+
+    # Save the order
+    user_id = update.message.from_user.id
+    dish_name = context.user_data["pending_order"]["dish"]
+    user_baskets[user_id] = {"dish": dish_name, "portions": quantity}
+
+    await update.message.reply_text(f"✅ *{quantity}* portions of *{dish_name}* added to your basket!", parse_mode="Markdown")
+
+    # Clean up context
+    del context.user_data["pending_order"]
+    del context.user_data["awaiting_quantity"]
+
 
 # Receive number of portions
 async def set_portions(update: Update, context: CallbackContext):
@@ -155,7 +194,11 @@ def main():
 
     # Callback handlers
     app.add_handler(CallbackQueryHandler(display_menu_of_week, pattern='^menu_of_week$'))  # Handle the callback data
-    app.add_handler(CallbackQueryHandler(show_dish_details))  # Catch all dish selections
+    app.add_handler(CallbackQueryHandler(show_dish_details, pattern=r'^(?!add_).*'))  # Catch all dish selections
+    app.add_handler(CallbackQueryHandler(add_to_basket, pattern=r'^add_.*'))  # Handle "Add to Basket"
+
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, receive_quantity))  # Handle user input
+
 
     print("Bot is running...")
     app.run_polling()
