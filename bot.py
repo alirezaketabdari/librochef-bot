@@ -16,8 +16,7 @@ from components.language import (
 )
 from components.menu import display_menu_of_week, show_dish_details
 from components.ordering import (
-    toggle_day, confirm_day, select_address, 
-    add_to_basket, receive_quantity, show_portion_selection, handle_portion_selection
+    show_portion_selection, handle_portion_selection
 )
 from components.quality import (
     handle_quality_feedback, receive_feedback_text, skip_feedback
@@ -50,22 +49,14 @@ def setup_handlers(app: Application):
     app.add_handler(CallbackQueryHandler(display_menu_of_week, pattern='^menu_of_week$'))
     app.add_handler(CallbackQueryHandler(show_dish_details, pattern=r'^gormeh_sabzi$'))
     
-    # Ordering flow
+    # Ordering flow (streamlined)
     app.add_handler(CallbackQueryHandler(show_portion_selection, pattern=r'^proceed_to_address$'))
     app.add_handler(CallbackQueryHandler(handle_portion_selection, pattern=r'^portion_\d+$'))
-    app.add_handler(CallbackQueryHandler(toggle_day, pattern=r"^toggle_.*"))
-    app.add_handler(CallbackQueryHandler(confirm_day, pattern="confirm_day"))
-    app.add_handler(CallbackQueryHandler(select_address, pattern=r"^address_.*"))
-    app.add_handler(CallbackQueryHandler(add_to_basket, pattern=r'^add_.*'))
     
     # Quality feedback
     app.add_handler(CallbackQueryHandler(handle_quality_feedback, pattern=r'^quality_(good|bad)_\d+$'))
     
-    # Message handlers
-    app.add_handler(MessageHandler(
-        filters.TEXT & ~filters.COMMAND & filters.Regex(r'^\d+$') & filters.ChatType.PRIVATE,
-        receive_quantity
-    ))
+    # Message handlers (only feedback now)
     app.add_handler(MessageHandler(
         filters.TEXT & ~filters.COMMAND & filters.ChatType.PRIVATE,
         receive_feedback_text
