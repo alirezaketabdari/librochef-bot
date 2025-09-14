@@ -10,7 +10,10 @@ from telegram.ext import (
 
 # Import components
 from components.welcome import welcome_message
-from components.language import handle_language_selection, handle_web_app_data
+from components.language import (
+    handle_language_selection, handle_web_app_data, 
+    handle_service_selection, handle_back_to_services
+)
 from components.menu import display_menu_of_week, show_dish_details
 from components.ordering import (
     toggle_day, confirm_day, select_address, 
@@ -35,6 +38,10 @@ def setup_handlers(app: Application):
     
     # Language selection
     app.add_handler(CallbackQueryHandler(handle_language_selection, pattern=r'^lang_.*'))
+    
+    # Service selection
+    app.add_handler(CallbackQueryHandler(handle_service_selection, pattern=r'^service_.*'))
+    app.add_handler(CallbackQueryHandler(handle_back_to_services, pattern=r'^back_to_services$'))
     
     # Web App data (for full-page language selection if implemented)
     app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_web_app_data))

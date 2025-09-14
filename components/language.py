@@ -59,9 +59,9 @@ async def handle_language_selection(update: Update, context: CallbackContext):
     selected_lang = language_names.get(language, 'English')
     
     confirmation_text = {
-        'en': f"✅ Language set to {selected_lang}\n\nWelcome to LibroChef! 🍽️",
-        'it': f"✅ Lingua impostata su {selected_lang}\n\nBenvenuto in LibroChef! 🍽️",
-        'fa': f"✅ زبان به {selected_lang} تنظیم شد\n\n!به LibroChef خوش آمدید 🍽️"
+        'en': f"✅ Language set to {selected_lang}",
+        'it': f"✅ Lingua impostata su {selected_lang}",
+        'fa': f"✅ زبان به {selected_lang} تنظیم شد"
     }
     
     await query.answer()
@@ -70,21 +70,112 @@ async def handle_language_selection(update: Update, context: CallbackContext):
         parse_mode="Markdown"
     )
     
-    # Import and show main menu after language selection
-    from components.menu import display_menu_of_week
-    
-    # Create a new update object to show menu
-    keyboard = [[InlineKeyboardButton("📋 Show Menu", callback_data='menu_of_week')]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    
-    menu_prompt = {
-        'en': "Ready to order? 🍴",
-        'it': "Pronto per ordinare? 🍴", 
-        'fa': "آماده سفارش؟ 🍴"
+    # Show LibroChef services after language selection
+    services_text = {
+        'en': "**LibroChef offers three different services:**\n\n"
+              "🍽️ **Weekend Delivery** – Every weekend, LibroChef suggests a special dish. You place your order, and at the scheduled time and date, you receive your meal directly from LibroChef.\n\n"
+              "🎉 **Party & Gathering Delivery** – Choose a suitable day from the available slots, pick your favorite items from the menu, and LibroChef delivers them to you at a very affordable cost—perfect for your parties and get-togethers.\n\n"
+              "👨‍🍳 **Personal Chef** – This service is still under development. As soon as it's ready, we'll be delighted to share the details with you.",
+        
+        'it': "**LibroChef offre tre servizi diversi:**\n\n"
+              "🍽️ **Consegna Weekend** – Ogni weekend, LibroChef suggerisce un piatto speciale. Fai il tuo ordine e all'orario e data programmati, ricevi il tuo pasto direttamente da LibroChef.\n\n"
+              "🎉 **Consegna per Feste e Riunioni** – Scegli un giorno adatto dagli slot disponibili, seleziona i tuoi piatti preferiti dal menu, e LibroChef te li consegna a un costo molto conveniente—perfetto per le tue feste e riunioni.\n\n"
+              "👨‍🍳 **Chef Personale** – Questo servizio è ancora in fase di sviluppo. Non appena sarà pronto, saremo felici di condividere i dettagli con te.",
+        
+        'fa': "**LibroChef سه سرویس مختلف ارائه می‌دهد:**\n\n"
+              "🍽️ **تحویل  آخر هفته** – هر آخر هفته، LibroChef یک غذای ویژه پیشنهاد می‌دهد. شما سفارش خود را ثبت می‌کنید و در زمان و تاریخ تعیین شده، غذای خود را مستقیماً از LibroChef دریافت می‌کنید.\n\n"
+              "🎉 **تحویل مهمانی و گردهمایی** – روز مناسبی از زمان‌های موجود انتخاب کنید، غذاهای مورد علاقه‌تان را از منو انتخاب کنید، و LibroChef آن‌ها را با قیمت بسیار مقرون به صرفه برای شما تحویل می‌دهد—عالی برای مهمانی‌ها و گردهمایی‌هایتان.\n\n"
+              "👨‍🍳 **سرآشپز شخصی** – این سرویس هنوز در حال توسعه است. به محض آماده شدن، خوشحال خواهیم بود جزئیات را با شما به اشتراک بگذاریم."
     }
     
+    keyboard = [
+        [InlineKeyboardButton("🍽️ Weekend Free Delivery", callback_data='service_weekend')],
+        [InlineKeyboardButton("🎉 Party & Gathering Delivery", callback_data='service_party')],
+        [InlineKeyboardButton("👨‍🍳 Personal Chef", callback_data='service_chef')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
     await query.message.reply_text(
-        menu_prompt.get(language, menu_prompt['en']),
+        services_text.get(language, services_text['en']),
+        parse_mode="Markdown",
+        reply_markup=reply_markup
+    )
+
+async def handle_service_selection(update: Update, context: CallbackContext):
+    """Handle service selection from buttons"""
+    query = update.callback_query
+    await query.answer()
+    
+    service = query.data.split('_')[1]  # Extract service type
+    language = context.user_data.get('language', 'en')
+    
+    if service == 'weekend':
+        # Continue with existing weekend delivery flow
+        menu_text = {
+            'en': "Please select a dish from the menu of the day:",
+            'it': "Seleziona un piatto dal menu del giorno:",
+            'fa': "لطفاً یک غذا از منوی روز انتخاب کنید:"
+        }
+        
+        await query.edit_message_text(menu_text.get(language, menu_text['en']))
+        
+        # Import and continue with existing menu flow
+        from components.menu import display_menu_of_week
+        await display_menu_of_week(update, context)
+        
+    elif service in ['party', 'chef']:
+        # Show under development message
+        under_development_text = {
+            'en': "🚧 **This option is under process**\n\nWe're working hard to bring you this amazing service soon! Please check back later or try our Weekend Free Delivery service.",
+            'it': "🚧 **Questa opzione è in fase di sviluppo**\n\nStiamo lavorando duramente per portarti presto questo servizio fantastico! Riprova più tardi o prova il nostro servizio di Consegna Gratuita Weekend.",
+            'fa': "🚧 **این گزینه در حال پردازش است**\n\nما سخت در حال کار بر روی این سرویس فوق‌العاده هستیم تا به زودی آن را برای شما آماده کنیم! لطفاً بعداً بررسی کنید یا سرویس تحویل رایگان آخر هفته ما را امتحان کنید."
+        }
+        
+        # Back to services button
+        keyboard = [[InlineKeyboardButton("🔙 Back to Services", callback_data='back_to_services')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        await query.edit_message_text(
+            under_development_text.get(language, under_development_text['en']),
+            parse_mode="Markdown",
+            reply_markup=reply_markup
+        )
+
+async def handle_back_to_services(update: Update, context: CallbackContext):
+    """Handle back to services button"""
+    query = update.callback_query
+    await query.answer()
+    
+    language = context.user_data.get('language', 'en')
+    
+    # Show services again
+    services_text = {
+        'en': "**LibroChef offers three different services:**\n\n"
+              "🍽️ **Weekend Free Delivery** – Every weekend, LibroChef suggests a special dish. You place your order, and at the scheduled time and date, you receive your meal directly from LibroChef.\n\n"
+              "🎉 **Party & Gathering Delivery** – Choose a suitable day from the available slots, pick your favorite items from the menu, and LibroChef delivers them to you at a very affordable cost—perfect for your parties and get-togethers.\n\n"
+              "👨‍🍳 **Personal Chef** – This service is still under development. As soon as it's ready, we'll be delighted to share the details with you.",
+        
+        'it': "**LibroChef offre tre servizi diversi:**\n\n"
+              "🍽️ **Consegna Gratuita Weekend** – Ogni weekend, LibroChef suggerisce un piatto speciale. Fai il tuo ordine e all'orario e data programmati, ricevi il tuo pasto direttamente da LibroChef.\n\n"
+              "🎉 **Consegna per Feste e Riunioni** – Scegli un giorno adatto dagli slot disponibili, seleziona i tuoi piatti preferiti dal menu, e LibroChef te li consegna a un costo molto conveniente—perfetto per le tue feste e riunioni.\n\n"
+              "👨‍🍳 **Chef Personale** – Questo servizio è ancora in fase di sviluppo. Non appena sarà pronto, saremo felici di condividere i dettagli con te.",
+        
+        'fa': "**LibroChef سه سرویس مختلف ارائه می‌دهد:**\n\n"
+              "🍽️ **تحویل رایگان آخر هفته** – هر آخر هفته، LibroChef یک غذای ویژه پیشنهاد می‌دهد. شما سفارش خود را ثبت می‌کنید و در زمان و تاریخ تعیین شده، غذای خود را مستقیماً از LibroChef دریافت می‌کنید.\n\n"
+              "🎉 **تحویل مهمانی و گردهمایی** – روز مناسبی از زمان‌های موجود انتخاب کنید، غذاهای مورد علاقه‌تان را از منو انتخاب کنید، و LibroChef آن‌ها را با قیمت بسیار مقرون به صرفه برای شما تحویل می‌دهد—عالی برای مهمانی‌ها و گردهمایی‌هایتان.\n\n"
+              "👨‍🍳 **سرآشپز شخصی** – این سرویس هنوز در حال توسعه است. به محض آماده شدن، خوشحال خواهیم بود جزئیات را با شما به اشتراک بگذاریم."
+    }
+    
+    keyboard = [
+        [InlineKeyboardButton("🍽️ Weekend Free Delivery", callback_data='service_weekend')],
+        [InlineKeyboardButton("🎉 Party & Gathering Delivery", callback_data='service_party')],
+        [InlineKeyboardButton("👨‍🍳 Personal Chef", callback_data='service_chef')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    await query.edit_message_text(
+        services_text.get(language, services_text['en']),
+        parse_mode="Markdown",
         reply_markup=reply_markup
     )
 
