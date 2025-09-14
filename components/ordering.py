@@ -31,10 +31,14 @@ async def show_portion_selection(update: Update, context: CallbackContext):
     
     # Check if delivery is fully reserved
     if is_fully_reserved():
+        keyboard = [[InlineKeyboardButton(texts.BACK_TO_START_BUTTON, callback_data='back_to_start')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
         await query.answer()
         await query.edit_message_text(
             texts.FULLY_RESERVED_MESSAGE,
-            parse_mode="Markdown"
+            parse_mode="Markdown",
+            reply_markup=reply_markup
         )
         return
     
@@ -68,15 +72,9 @@ async def show_portion_selection(update: Update, context: CallbackContext):
     
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    # Create dynamic title with remaining portions info
-    title_with_info = (
-        f"{texts.PORTION_SELECTION_TITLE}\n\n"
-        f"📊 **Available portions: {remaining}/{MAX_PORTIONS}**"
-    )
-    
     await query.answer()
     await query.edit_message_text(
-        title_with_info,
+        texts.PORTION_SELECTION_TITLE,
         parse_mode="Markdown",
         reply_markup=reply_markup
     )

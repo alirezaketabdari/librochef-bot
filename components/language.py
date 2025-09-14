@@ -121,6 +121,16 @@ async def handle_back_to_services(update: Update, context: CallbackContext):
         reply_markup=reply_markup
     )
 
+async def handle_back_to_start(update: Update, context: CallbackContext):
+    """Handle back to start button - restart the language selection"""
+    query = update.callback_query
+    
+    # Clear user data and restart
+    context.user_data.clear()
+    
+    await query.answer()
+    await show_language_selection(update, context)
+
 async def handle_web_app_data(update: Update, context: CallbackContext):
     """Handle data from web app (if using web app version)"""
     try:
