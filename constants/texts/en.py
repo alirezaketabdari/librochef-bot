@@ -113,6 +113,23 @@ PRE_RESERVATION_MESSAGE = "🎉 This is a pre-reservation. We will contact you t
 PLACE_ANOTHER_ORDER = "🔄 To place another order, please use /start"
 BOT_ERROR_MESSAGE = "There is an issue with the bot. Please try again later or contact the admin: [Contact Admin]({contact_admin})"
 DISH_NOT_FOUND = "Dish not found."
+# Weekly dish display format
+WEEKLY_DISH_TITLE = "🍽️✨ **THIS WEEK LIBROCHEF OFFERS {dish_name}** ✨🍽️"
+DELIVERY_DAY_TITLE = "📅🌟 **!! {day} !!** 🌟📅"
+PRICE_TITLE = "💰 **Price:** €{price}"
+INGREDIENTS_TITLE = "🥘 **Ingredients:**"
+ALLERGENS_TITLE = "⚠️ **Allergens:**"
+NUTRITION_TITLE = "📊 **Nutritional Values (per serving):**"
+EXTRA_INFO_TITLE = "ℹ️ **Extra Information:**"
+ORDER_BUTTON_TEXT = "🛒 **ORDER NOW**"
+PORTION_SELECTION_TITLE = "🔢 **How many portions would you like to order?**\n\nChoose your portion size below:"
+PORTION_1_BUTTON = "1️⃣ 1 portion"
+PORTION_2_BUTTON = "2️⃣ 2 portions" 
+PORTION_3_BUTTON = "3️⃣ 3 portions"
+PORTION_4_BUTTON = "4️⃣ 4 portions"
+CONTACT_ADMIN_MORE_BUTTON = "📞 Contact Admin for more"
+FULLY_RESERVED_MESSAGE = "🚫 **This delivery is fully reserved**\n\nPlease wait for the next week's menu. We'll be back with delicious new dishes!"
+
 SELECT_DISH_PROMPT = "Please select a dish from the menu of the day:"
 SELECT_AT_LEAST_ONE_DAY = "❌ Please select at least one day!"
 DELIVERY_SELECTED = "✅ You selected *{days}* for delivery.\n\n📌 *Please select your delivery address:*"
@@ -120,3 +137,18 @@ ADDRESS_SELECTED = "📍 You selected *{address}* as the delivery address.\n\n�
 ADD_TO_BASKET_BUTTON = "🛒 Add to Basket"
 QUANTITY_RANGE_ERROR = "⚠️ Please enter a number between 1 and 4.\nFor larger orders, contact the admin: [Contact Admin](https://t.me/mrlibro)"
 PORTIONS_LIMIT_ERROR = "❌ We can only accept {remaining} more portions today. Please order a smaller quantity or try again tomorrow."
+
+# Service selection texts
+SERVICES_INTRO = "**LibroChef offers three different services:**\n\n🍽️ **Weekend Delivery** – Every weekend, LibroChef suggests a special dish. You place your order, and at the scheduled time and date, you receive your meal directly from LibroChef.\n\n🎉 **Party & Gathering Delivery** – Choose a suitable day from the available slots, pick your favorite items from the menu, and LibroChef delivers them to you at a very affordable cost—perfect for your parties and get-togethers.\n\n👨‍🍳 **Personal Chef** – This service is still under development. As soon as it's ready, we'll be delighted to share the details with you."
+
+# Service buttons
+WEEKEND_DELIVERY_BUTTON = "🍽️ Weekend Free Delivery"
+PARTY_DELIVERY_BUTTON = "🎉 Party & Gathering Delivery"
+PERSONAL_CHEF_BUTTON = "👨‍🍳 Personal Chef"
+
+# Service flow texts (removed duplicate menu prompt since there's only one dish)
+SERVICE_UNDER_DEVELOPMENT = "🚧 **This option is under process**\n\nWe're working hard to bring you this amazing service soon! Please check back later or try our Weekend Free Delivery service."
+BACK_TO_SERVICES_BUTTON = "🔙 Back to Services"
+
+# Language selection
+LANGUAGE_SET_CONFIRMATION = "✅ Language set to {language}"

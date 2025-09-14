@@ -27,13 +27,24 @@ def is_expecting_feedback(context: CallbackContext) -> bool:
 
 async def error_handler(update: Update, context: CallbackContext):
     """Handle errors and notify user"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    logger.error("Exception while handling an update:", exc_info=context.error)
+    
+    # Only try to send error message if we have a valid update with message capability
     try:
-        await update.message.reply_text(
-            texts.get("BOT_ERROR_MESSAGE", contact_admin=CONTACT_ADMIN),
-            parse_mode='Markdown'
-        )
+        if update and hasattr(update, 'effective_message') and update.effective_message:
+            await update.effective_message.reply_text(
+                "C'è un problema con il bot. Riprova più tardi o contatta l'admin: Contact Admin (https://t.me/mrlibro)"
+            )
+        elif update and hasattr(update, 'message') and update.message:
+            await update.message.reply_text(
+                "C'è un problema con il bot. Riprova più tardi o contatta l'admin: Contact Admin (https://t.me/mrlibro)"
+            )
     except Exception as e:
-        logging.error(f"Error sending message: {e}")
+        logger.error(f"Error sending error message: {e}")
+        # Don't try to send another message, just log it
 
 def setup_logging():
     """Configure logging"""

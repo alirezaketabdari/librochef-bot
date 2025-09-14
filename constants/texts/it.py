@@ -99,6 +99,23 @@ PORTIONS_ADDED_SUCCESS = "✅ *{quantity}* porzioni di *{dish}* aggiunte al tuo 
 PRE_RESERVATION_MESSAGE = "🎉 Questa è una pre-prenotazione. Ti contatteremo per confermare la prenotazione."
 PLACE_ANOTHER_ORDER = "🔄 Per effettuare un altro ordine, usa /start"
 BOT_ERROR_MESSAGE = "C'è un problema con il bot. Riprova più tardi o contatta l'admin: [Contatta Admin]({contact_admin})"
+# Weekly dish display format
+WEEKLY_DISH_TITLE = "🍽️✨ **QUESTA SETTIMANA LIBROCHEF OFFRE {dish_name}** ✨🍽️"
+DELIVERY_DAY_TITLE = "📅🌟 **!! {day} !!** 🌟📅"
+PRICE_TITLE = "💰 **Prezzo:** €{price}"
+INGREDIENTS_TITLE = "🥘 **Ingredienti:**"
+ALLERGENS_TITLE = "⚠️ **Allergeni:**"
+NUTRITION_TITLE = "📊 **Valori Nutrizionali (per porzione):**"
+EXTRA_INFO_TITLE = "ℹ️ **Informazioni Extra:**"
+ORDER_BUTTON_TEXT = "🛒 **ORDINA ORA**"
+PORTION_SELECTION_TITLE = "🔢 **Quante porzioni vorresti ordinare?**\n\nScegli la tua porzione qui sotto:"
+PORTION_1_BUTTON = "1️⃣ 1 porzione"
+PORTION_2_BUTTON = "2️⃣ 2 porzioni"
+PORTION_3_BUTTON = "3️⃣ 3 porzioni" 
+PORTION_4_BUTTON = "4️⃣ 4 porzioni"
+CONTACT_ADMIN_MORE_BUTTON = "📞 Contatta Admin per di più"
+FULLY_RESERVED_MESSAGE = "🚫 **Questa consegna è completamente prenotata**\n\nPer favore aspetta il menu della prossima settimana. Torneremo con nuovi piatti deliziosi!"
+
 DISH_NOT_FOUND = "Piatto non trovato."
 SELECT_DISH_PROMPT = "Seleziona un piatto dal menu del giorno:"
 SELECT_AT_LEAST_ONE_DAY = "❌ Seleziona almeno un giorno!"
@@ -107,3 +124,18 @@ ADDRESS_SELECTED = "📍 Hai selezionato *{address}* come indirizzo di consegna.
 ADD_TO_BASKET_BUTTON = "🛒 Aggiungi al Carrello"
 QUANTITY_RANGE_ERROR = "⚠️ Inserisci un numero tra 1 e 4.\nPer ordini più grandi, contatta l'admin: [Contatta Admin](https://t.me/mrlibro)"
 PORTIONS_LIMIT_ERROR = "❌ Possiamo accettare solo {remaining} porzioni in più oggi. Ordina una quantità minore o riprova domani."
+
+# Service selection texts
+SERVICES_INTRO = "**LibroChef offre tre servizi diversi:**\n\n🍽️ **Consegna Weekend** – Ogni weekend, LibroChef suggerisce un piatto speciale. Fai il tuo ordine e all'orario e data programmati, ricevi il tuo pasto direttamente da LibroChef.\n\n🎉 **Consegna per Feste e Riunioni** – Scegli un giorno adatto dagli slot disponibili, seleziona i tuoi piatti preferiti dal menu, e LibroChef te li consegna a un costo molto conveniente—perfetto per le tue feste e riunioni.\n\n👨‍🍳 **Chef Personale** – Questo servizio è ancora in fase di sviluppo. Non appena sarà pronto, saremo felici di condividere i dettagli con te."
+
+# Service buttons
+WEEKEND_DELIVERY_BUTTON = "🍽️ Consegna Weekend"
+PARTY_DELIVERY_BUTTON = "🎉 Consegna Feste e Riunioni"
+PERSONAL_CHEF_BUTTON = "👨‍🍳 Chef Personale"
+
+# Service flow texts (removed duplicate menu prompt since there's only one dish)
+SERVICE_UNDER_DEVELOPMENT = "🚧 **Questa opzione è in fase di sviluppo**\n\nStiamo lavorando duramente per portarti presto questo servizio fantastico! Riprova più tardi o prova il nostro servizio di Consegna Weekend."
+BACK_TO_SERVICES_BUTTON = "🔙 Torna ai Servizi"
+
+# Language selection
+LANGUAGE_SET_CONFIRMATION = "✅ Lingua impostata su {language}"

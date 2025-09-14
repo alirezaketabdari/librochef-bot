@@ -25,7 +25,7 @@ CONTACT_ADMIN = "https://t.me/mrlibro"  # Admin contact link
 # =============================================================================
 
 # Order Limits
-MAX_PORTIONS = 5  # Maximum total portions that can be ordered per day
+MAX_PORTIONS = 20  # Maximum total portions that can be ordered per day
 
 # File Paths
 ORDERS_LOG_FILE = "orders.txt"  # File to store order history
@@ -42,22 +42,62 @@ QUALITY_CHECK_DELAY = 5  # Seconds to wait before sending quality check
 # MENU DATA CONSTANTS
 # =============================================================================
 
-# Weekly Menu Configuration
-# This can be easily updated to change the menu offerings
+# =============================================================================
+# WEEKLY MENU CONFIGURATION - EASY TO UPDATE EACH WEEK
+# =============================================================================
+# Update these values every week for the new dish offering
+
+# This Week's Featured Dish
+WEEKLY_DISH = {
+    "name": "GORMEH SABZI",
+    "display_name": "Gormeh Sabzi",  # For display in messages
+    "price": 12,
+    "delivery_day": "SUNDAY",
+    "delivery_time": "13:00-15:00",
+    "location": "Milan",
+    
+    # Ingredients
+    "ingredients": [
+        "Fresh herbs (parsley, cilantro, chives, fenugreek)",
+        "Red kidney beans", 
+        "Beef chunks (300g)",
+        "Dried black lime",
+        "Onion",
+        "Turmeric",
+        "Persian saffron",
+        "Basmati rice"
+    ],
+    
+    # Allergen information
+    "allergens": [
+        "Contains gluten (if served with bread)",
+        "May contain traces of nuts",
+        "Dairy-free",
+        "Contains legumes"
+    ],
+    
+    # Nutritional values per serving
+    "nutrition": {
+        "calories": "450 kcal",
+        "protein": "28g",
+        "carbohydrates": "35g", 
+        "fat": "22g",
+        "fiber": "8g",
+        "sodium": "850mg"
+    },
+    
+    # Extra information
+    "extra_info": "Traditional Persian herb stew slow-cooked for 4 hours with authentic spices. Served with aromatic saffron basmati rice. This dish is naturally gluten-free and packed with fresh herbs and protein."
+}
+
+# Legacy menu format for compatibility (will be phased out)
 MENU_OF_WEEK = [
     {
-        "name": "kir",
-        "price": 6,
-        "location": "Milan", 
-        "time_of_delivery": "13:00-14:00"
-    },
-    # Add more menu items here as needed
-    # {
-    #     "name": "another_dish",
-    #     "price": 8,
-    #     "location": "Rome",
-    #     "time_of_delivery": "12:00-13:00"
-    # }
+        "name": WEEKLY_DISH["display_name"].lower().replace(" ", "_"),
+        "price": WEEKLY_DISH["price"],
+        "location": WEEKLY_DISH["location"], 
+        "time_of_delivery": WEEKLY_DISH["delivery_time"]
+    }
 ]
 
 # Available Delivery Addresses
@@ -104,6 +144,21 @@ def is_within_portion_limit(additional_quantity):
 def get_remaining_portions():
     """Get how many more portions can be ordered today"""
     return max(0, MAX_PORTIONS - current_portions_count)
+
+def get_available_portion_options():
+    """Get list of available portion options based on remaining capacity"""
+    remaining = get_remaining_portions()
+    
+    if remaining <= 0:
+        return []  # No portions available
+    
+    # Return available options (1 to min(4, remaining))
+    max_available = min(4, remaining)  # Never more than 4 per order
+    return list(range(1, max_available + 1))
+
+def is_fully_reserved():
+    """Check if delivery is fully reserved (no portions available)"""
+    return get_remaining_portions() <= 0
 
 # =============================================================================
 # VALIDATION FUNCTIONS
@@ -167,6 +222,6 @@ __all__ = [
     
     # Helper Functions
     'get_current_menu', 'get_delivery_addresses', 'get_available_days',
-    'is_within_portion_limit', 'get_remaining_portions',
-    'is_valid_quantity', 'find_dish_by_name', 'validate_configuration'
+    'is_within_portion_limit', 'get_remaining_portions', 'get_available_portion_options',
+    'is_fully_reserved', 'is_valid_quantity', 'find_dish_by_name', 'validate_configuration'
 ]

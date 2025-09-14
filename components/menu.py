@@ -4,47 +4,60 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 from constants.texts import texts
 from constants.variables import (
-    get_current_menu, find_dish_by_name, current_portions_count, MAX_PORTIONS
+    get_current_menu, find_dish_by_name, current_portions_count, MAX_PORTIONS, WEEKLY_DISH
 )
 
-def get_details_text():
-    """Generate details text using constants and current menu data"""
-    current_menu = get_current_menu()
-    if not current_menu:
-        return texts.NO_MENU_AVAILABLE
+def get_weekly_dish_text():
+    """Generate beautiful weekly dish display using new format"""
+    dish = WEEKLY_DISH
     
-    dish = current_menu[0]
+    # Format ingredients list
+    ingredients_list = "\n".join([f"• {ingredient}" for ingredient in dish['ingredients']])
+    
+    # Format allergens list  
+    allergens_list = "\n".join([f"• {allergen}" for allergen in dish['allergens']])
+    
+    # Format nutrition info
+    nutrition_list = "\n".join([f"• {key.title()}: {value}" for key, value in dish['nutrition'].items()])
+    
     return (
-        f"{texts.MENU_PACK_PREFIX} {dish['name']}*\n\n"
-        f"{texts.CUTLET_COUNT_TEXT}\n"
-        f"{texts.PRICE_TEXT}{dish['price']}\n"
-        f"{texts.MEAT_TEXT}\n"
-        f"{texts.EGG_TEXT}\n"
-        f"{texts.POTATO_TEXT}\n"
-        f"{texts.ONION_TEXT}\n"
-        f"{texts.GARLIC_TEXT}\n"
-        f"{texts.SANDWICH_INSIDE_TEXT}\n"
-        f"{texts.SERVED_WITH_TEXT}\n"
-        f"{texts.ALLERGEN_INFO_TEXT}\n\n"
-        f"{texts.DELIVERY_TIME_TEXT} {dish['time_of_delivery']}\n"
-        f"{texts.LOCATION_TEXT} {dish['location']}\n\n"
-        f"{texts.MEAT_QUALITY_TEXT}\n\n"
-        f"{texts.SELECT_DELIVERY_DAY_TEXT}"
+        f"{texts.get('WEEKLY_DISH_TITLE', dish_name=dish['name'])}\n\n"
+        f"{texts.get('DELIVERY_DAY_TITLE', day=dish['delivery_day'])}\n\n"
+        f"{texts.get('PRICE_TITLE', price=dish['price'])}\n\n"
+        f"{texts.INGREDIENTS_TITLE}\n{ingredients_list}\n\n"
+        f"{texts.ALLERGENS_TITLE}\n{allergens_list}\n\n"
+        f"{texts.NUTRITION_TITLE}\n{nutrition_list}\n\n"
+        f"{texts.EXTRA_INFO_TITLE}\n{dish['extra_info']}\n\n"
+        f"📍 **Location:** {dish['location']}\n"
+        f"⏰ **Delivery Time:** {dish['delivery_time']}"
     )
 
+def get_details_text():
+    """Legacy function - kept for compatibility"""
+    return get_weekly_dish_text()
+
 async def display_menu_of_week(update: Update, context: CallbackContext):
-    """Display the weekly menu"""
+    """Display the weekly featured dish directly (no selection needed since there's only one dish)"""
     if current_portions_count >= MAX_PORTIONS:
         await update.callback_query.answer(texts.COMPLETELY_FULL_MESSAGE, show_alert=True)
         return
 
-    current_menu = get_current_menu()
+    # Store the weekly dish in user context
+    context.user_data["selected_dish"] = WEEKLY_DISH["display_name"].lower().replace(" ", "_")
+    context.user_data["selected_days"] = [WEEKLY_DISH["delivery_day"]]  # Pre-select the fixed delivery day
+    
+    # Create the order button (no day selection needed since it's fixed)
     keyboard = [
-        [InlineKeyboardButton(dish['name'], callback_data=dish['name']) for dish in current_menu]
+        [InlineKeyboardButton(texts.ORDER_BUTTON_TEXT, callback_data="proceed_to_address")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.callback_query.message.reply_text(texts.SELECT_DISH_PROMPT, reply_markup=reply_markup)
+
     await update.callback_query.answer()
+    await update.callback_query.edit_message_text(
+        get_weekly_dish_text(), 
+        parse_mode="Markdown", 
+        reply_markup=reply_markup
+    )
 
 async def show_dish_details(update: Update, context: CallbackContext):
     """Show detailed information about a selected dish"""

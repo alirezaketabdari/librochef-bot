@@ -17,7 +17,7 @@ from components.language import (
 from components.menu import display_menu_of_week, show_dish_details
 from components.ordering import (
     toggle_day, confirm_day, select_address, 
-    add_to_basket, receive_quantity
+    add_to_basket, receive_quantity, show_portion_selection, handle_portion_selection
 )
 from components.quality import (
     handle_quality_feedback, receive_feedback_text, skip_feedback
@@ -48,9 +48,11 @@ def setup_handlers(app: Application):
     
     # Menu flow
     app.add_handler(CallbackQueryHandler(display_menu_of_week, pattern='^menu_of_week$'))
-    app.add_handler(CallbackQueryHandler(show_dish_details, pattern=r'^kir$'))
+    app.add_handler(CallbackQueryHandler(show_dish_details, pattern=r'^gormeh_sabzi$'))
     
     # Ordering flow
+    app.add_handler(CallbackQueryHandler(show_portion_selection, pattern=r'^proceed_to_address$'))
+    app.add_handler(CallbackQueryHandler(handle_portion_selection, pattern=r'^portion_\d+$'))
     app.add_handler(CallbackQueryHandler(toggle_day, pattern=r"^toggle_.*"))
     app.add_handler(CallbackQueryHandler(confirm_day, pattern="confirm_day"))
     app.add_handler(CallbackQueryHandler(select_address, pattern=r"^address_.*"))
@@ -88,11 +90,16 @@ def main():
         print("🤖 LibroChef Bot starting...")
         print("✅ All components loaded")
         print("🚀 Bot is running!")
+        print("💡 Press Ctrl+C to stop the bot")
         
-        app.run_polling()
+        # Run with drop_pending_updates to clear conflicts
+        app.run_polling(drop_pending_updates=True)
         
+    except KeyboardInterrupt:
+        print("\n🛑 Bot stopped by user")
     except Exception as e:
-        print(f"❌ Bot failed to start: {e}")
+        print(f"❌ Bot startup error: {e}")
+        print("💡 Try running: python fix_bot_conflicts.py")
 
 if __name__ == "__main__":
     main()
