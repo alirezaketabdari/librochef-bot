@@ -16,10 +16,10 @@ from constants.variables import (
 
 def increment_portions_count(quantity):
     """Add the ordered quantity to the total count"""
-    global current_portions_count
-    current_portions_count += quantity
-    with open(PORTION_COUNT_FILE, 'w') as f:
-        f.write(str(current_portions_count))
+    import constants.variables as vars_module
+    vars_module.current_portions_count += quantity
+    with open(PORTION_COUNT_FILE, 'w', encoding='utf-8') as f:
+        f.write(str(vars_module.current_portions_count))
 
 # toggle_day removed - not needed in streamlined flow
 

@@ -5,17 +5,19 @@ from telegram.ext import CallbackContext
 import logging
 from constants.texts import texts
 from constants.variables import (
-    CONTACT_ADMIN, PORTION_COUNT_FILE, validate_configuration, current_portions_count
+    CONTACT_ADMIN, PORTION_COUNT_FILE, validate_configuration
 )
+import constants.variables as vars_module
 
 def load_portions_count():
-    """Load portion count from file"""
-    global current_portions_count
+    """Load portion count from file and update the global variable"""
     try:
-        with open(PORTION_COUNT_FILE, 'r') as f:
-            current_portions_count = int(f.read())
-    except (FileNotFoundError, ValueError):
-        current_portions_count = 0
+        with open(PORTION_COUNT_FILE, 'r', encoding='utf-8') as f:
+            vars_module.current_portions_count = int(f.read().strip())
+            print(f"📊 Loaded portion count: {vars_module.current_portions_count}/{vars_module.MAX_PORTIONS}")
+    except (FileNotFoundError, ValueError) as e:
+        vars_module.current_portions_count = 0
+        print(f"📊 Portion count file issue ({e}), starting with 0")
 
 def is_expecting_quantity(context: CallbackContext) -> bool:
     """Check if user is in quantity input mode"""
