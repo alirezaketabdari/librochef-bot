@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibroChef Bot - Welcome</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .welcome-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .language-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .language-btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border: none;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .language-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .language-btn:active {
+            transform: translateY(0);
+        }
+
+        .flag {
+            font-size: 1.5rem;
+        }
+
+        .welcome-text {
+            margin-bottom: 20px;
+        }
+
+        .welcome-text .en {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .welcome-text .it {
+            display: block;
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+
+        .welcome-text .fa {
+            display: block;
+            opacity: 0.8;
+            direction: rtl;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-container {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .language-btn:nth-child(1) {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .language-btn:nth-child(2) {
+            animation: fadeIn 1s ease-out;
+        }
+
+        .language-btn:nth-child(3) {
+            animation: fadeIn 1.2s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <div class="logo">🍽️</div>
+        <h1 class="title">LibroChef Bot</h1>
+        
+        <div class="welcome-text">
+            <div class="en">Welcome to LibroChef bot,<br>Which language do you prefer?</div>
+            <div class="it">Benvenuto nel bot LibroChef,<br>Quale lingua preferisci?</div>
+            <div class="fa">به ربات LibroChef خوش آمدید،<br>کدام زبان را ترجیح می‌دهید؟</div>
+        </div>
+
+        <div class="language-buttons">
+            <button class="language-btn" onclick="selectLanguage('en')">
+                <span class="flag">🇬🇧</span>
+                <span>English</span>
+            </button>
+            
+            <button class="language-btn" onclick="selectLanguage('it')">
+                <span class="flag">🇮🇹</span>
+                <span>Italiano</span>
+            </button>
+            
+            <button class="language-btn" onclick="selectLanguage('fa')">
+                <span class="flag">🇮🇷</span>
+                <span>فارسی</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Telegram Web App
+        let tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        function selectLanguage(lang) {
+            // Add visual feedback
+            const buttons = document.querySelectorAll('.language-btn');
+            buttons.forEach(btn => btn.style.opacity = '0.5');
+            
+            // Send language selection to bot
+            tg.sendData(JSON.stringify({
+                action: 'select_language',
+                language: lang
+            }));
+            
+            // Close the web app
+            setTimeout(() => {
+                tg.close();
+            }, 500);
+        }
+
+        // Style the page according to Telegram theme
+        tg.setHeaderColor('#667eea');
+        tg.setBackgroundColor('#667eea');
+    </script>
+</body>
+</html>
